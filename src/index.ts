@@ -38,6 +38,11 @@ export class Houstn {
 
         const options = this.config;
 
+        if (!options.token) {
+            console.warn('No token provided, not starting');
+            return;
+        }
+
         this.interval = setInterval(() => this.ping(metadata || options.metadata), options.interval)
     }
 
@@ -92,10 +97,6 @@ export class Houstn {
 
         if (!config.environment) {
             throw new Error('No environment provided');
-        }
-
-        if (!config.token) {
-            throw new Error('No token provided');
         }
 
         if (config.interval < 5000) {
