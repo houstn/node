@@ -52,7 +52,7 @@ export class Houstn {
                     'Content-Type': 'application/json',
                     Authorization: `Basic ${auth}`,
                 },
-                body: JSON.stringify(metadata)
+                body: typeof metadata === 'string' ? metadata : JSON.stringify(metadata)
             })
         } catch (error) {
             console.error('Failed to ping Houstn')

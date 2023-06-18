@@ -4,6 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "start.js"
+  ],
   "scripts": {
     "build": "tsc"
   },
