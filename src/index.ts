@@ -38,8 +38,8 @@ export class Houstn {
 
         const options = this.config;
 
-        if (!options.token) {
-            console.warn('No token provided, not starting');
+        if (!options) {
+            console.warn('Invalid options, not starting');
             return;
         }
 
@@ -49,6 +49,11 @@ export class Houstn {
     async ping(metadata: any) {
         try {
             const options = this.config;
+
+            if (!options) {
+                console.warn('No options provided, not pinging');
+                return;
+            }
 
             const url = options.url || "https://hello.houstn.io"
             const path = `${options.project}/${options.application}/${options.environment}`
@@ -85,20 +90,29 @@ export class Houstn {
             metadata: this.options.metadata,
         }
 
+        if (!config.token) {
+            console.warn('No token provided');
+            return null;
+        }
+
         if (!config.project) {
-            throw new Error('No project provided');
+            console.warn('No project provided');
+            return null;
         }
 
         if (!config.application) {
-            throw new Error('No application provided');
+            console.warn('No application provided');
+            return null;
         }
 
         if (!config.environment) {
-            throw new Error('No environment provided');
+            console.warn('No environment provided');
+            return null;
         }
 
         if (config.interval < 5000) {
-            throw new Error('Interval must be at least 5 seconds');
+            console.warn('Interval must be at least 5 seconds');
+            return null;
         }
 
         return config;
