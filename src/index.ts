@@ -14,8 +14,12 @@ export class Houstn {
     interval?: NodeJS.Timeout;
 
     constructor(public options: HoustnOptions) {
-        if (options.interval < 5) {
+        if (options.interval < 5000) {
             throw new Error('Interval must be at least 5 seconds');
+        }
+
+        if (!options.url) {
+            options.url = "https://hello.houstn.io"
         }
     }
 
