@@ -12,6 +12,6 @@ function env(name, defaultValue) {
     return process.env[name] || defaultValue;
 }
 
-houstn.Houstn.start({
+houstn.default({
     metadata: env('HOUSTN_METADATA'),
 });

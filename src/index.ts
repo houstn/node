@@ -38,7 +38,7 @@ export class Houstn {
 
         const options = this.config;
 
-        this.interval = setInterval(() => this.ping(metadata), options.interval)
+        this.interval = setInterval(() => this.ping(metadata || options.metadata), options.interval)
     }
 
     async ping(metadata: any) {
@@ -51,6 +51,7 @@ export class Houstn {
             const url = options.url || "https://hello.houstn.io"
 
             await fetch(url, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Basic ${auth}`,
@@ -103,7 +104,20 @@ export class Houstn {
 
         return config;
     }
-
 }
 
-export default Houstn;
+export function start() {
+    Houstn.start({
+        metadata: process.env.HOUSTN_METADATA
+    })
+}
+
+export default function houstn(options: HoustnOptions) {
+    const houstn = Houstn.init(options);
+    return houstn.start(options.metadata)
+};
+
+houstn.start = function start(options: HoustnOptions) {
+    const houstn = Houstn.init(options);
+    return houstn.start(options.metadata)
+}
