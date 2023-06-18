@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 export interface HoustnOptions {
-    url: string;
+    url?: string;
     organisation: string;
     application: string;
     environment: string;
