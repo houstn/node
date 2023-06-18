@@ -6,7 +6,7 @@ export interface HoustnOptions {
     application?: string;
     environment?: string;
     interval?: number;
-    token: string;
+    token?: string;
     metadata?: any;
 }
 
@@ -72,7 +72,7 @@ export class Houstn {
 
     get config() {
         const config = {
-            url: this.options.url || "https://hello.houstn.io",
+            url: this.options.url || process.env.HOUSTN_URL || "https://hello.houstn.io",
             organisation: this.options.organisation || process.env.HOUSTN_ORG || process.env.HOUSTN_ORGANISATION,
             application: this.options.application || process.env.HOUSTN_APP || process.env.HOUSTN_APPLICATION,
             environment: this.options.environment || process.env.HOUSTN_ENV || process.env.HOUSTN_ENVIRONMENT,
