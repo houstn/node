@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 export interface HoustnOptions {
     url?: string;
-    organisation?: string;
+    project?: string;
     application?: string;
     environment?: string;
     interval?: number;
@@ -50,16 +50,14 @@ export class Houstn {
         try {
             const options = this.config;
 
-            const username = `${options.organisation}+${options.application}+${options.environment}`
-            const auth = Buffer.from(`${username}:${options.token}`).toString('base64');
-
             const url = options.url || "https://hello.houstn.io"
+            const path = `${options.project}/${options.application}/${options.environment}`
 
-            await fetch(url, {
+            await fetch(`${url}/${path}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Basic ${auth}`,
+                    Authorization: `Bearer ${options.token}`,
                 },
                 body: typeof metadata === 'string' ? metadata : JSON.stringify(metadata)
             })
@@ -79,7 +77,7 @@ export class Houstn {
     get config() {
         const config = {
             url: this.options.url || process.env.HOUSTN_URL || "https://hello.houstn.io",
-            organisation: this.options.organisation || process.env.HOUSTN_ORG || process.env.HOUSTN_ORGANISATION,
+            project: this.options.project || process.env.HOUSTN_PROJECT,
             application: this.options.application || process.env.HOUSTN_APP || process.env.HOUSTN_APPLICATION,
             environment: this.options.environment || process.env.HOUSTN_ENV || process.env.HOUSTN_ENVIRONMENT,
             interval: Number(this.options.interval || process.env.HOUSTN_INTERVAL || process.env.HOUSTN_MS || 5000),
@@ -87,8 +85,8 @@ export class Houstn {
             metadata: this.options.metadata,
         }
 
-        if (!config.organisation) {
-            throw new Error('No organisation provided');
+        if (!config.project) {
+            throw new Error('No project provided');
         }
 
         if (!config.application) {
