@@ -2,10 +2,10 @@ import fetch from 'node-fetch';
 
 export interface HoustnOptions {
     url?: string;
-    organisation: string;
-    application: string;
-    environment: string;
-    interval: number;
+    organisation?: string;
+    application?: string;
+    environment?: string;
+    interval?: number;
     token: string;
     metadata?: any;
 }
@@ -14,13 +14,6 @@ export class Houstn {
     interval?: NodeJS.Timeout;
 
     constructor(public options: HoustnOptions) {
-        if (options.interval < 5000) {
-            throw new Error('Interval must be at least 5 seconds');
-        }
-
-        if (!options.url) {
-            options.url = "https://hello.houstn.io"
-        }
     }
 
     static init(options: HoustnOptions): Houstn {
@@ -43,15 +36,21 @@ export class Houstn {
     start(metadata: any) {
         console.log('Houstn started');
 
-        this.interval = setInterval(() => this.ping(metadata), this.options.interval)
+        const options = this.config;
+
+        this.interval = setInterval(() => this.ping(metadata), options.interval)
     }
 
     async ping(metadata: any) {
         try {
-            const username = `${this.options.organisation}+${this.options.application}+${this.options.environment}`
-            const auth = Buffer.from(`${username}:${this.options.token}`).toString('base64');
+            const options = this.config;
 
-            await fetch(this.options.url, {
+            const username = `${options.organisation}+${options.application}+${options.environment}`
+            const auth = Buffer.from(`${username}:${options.token}`).toString('base64');
+
+            const url = options.url || "https://hello.houstn.io"
+
+            await fetch(url, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Basic ${auth}`,
@@ -69,6 +68,42 @@ export class Houstn {
 
         clearInterval(this.interval);
     }
+
+
+    get config() {
+        const config = {
+            url: this.options.url || "https://hello.houstn.io",
+            organisation: this.options.organisation || process.env.HOUSTN_ORG || process.env.HOUSTN_ORGANISATION,
+            application: this.options.application || process.env.HOUSTN_APP || process.env.HOUSTN_APPLICATION,
+            environment: this.options.environment || process.env.HOUSTN_ENV || process.env.HOUSTN_ENVIRONMENT,
+            interval: Number(this.options.interval || process.env.HOUSTN_INTERVAL || process.env.HOUSTN_MS || 5000),
+            token: this.options.token || process.env.HOUSTN_TOKEN || process.env.HOUSTN_KEY || process.env.HOUSTN_API_KEY,
+            metadata: this.options.metadata,
+        }
+
+        if (!config.organisation) {
+            throw new Error('No organisation provided');
+        }
+
+        if (!config.application) {
+            throw new Error('No application provided');
+        }
+
+        if (!config.environment) {
+            throw new Error('No environment provided');
+        }
+
+        if (!config.token) {
+            throw new Error('No token provided');
+        }
+
+        if (config.interval < 5000) {
+            throw new Error('Interval must be at least 5 seconds');
+        }
+
+        return config;
+    }
+
 }
 
 export default Houstn;
